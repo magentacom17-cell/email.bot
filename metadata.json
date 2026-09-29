@@ -1,0 +1,6 @@
+{
+  "name": "RADCOM Email Workspace",
+  "description": "Aplikasi profesional pengirim dan generator email bisnis PT Radcom Solusindo Informatika dengan multi-channel (Gmail, Webmail, SMTP Server, dan WhatsApp).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
