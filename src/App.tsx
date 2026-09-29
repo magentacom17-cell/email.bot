@@ -376,8 +376,8 @@ export default function App() {
     } catch (err: any) {
       setSendNotification({
         type: 'error',
-        title: 'Kesalahan Server',
-        message: err.message || 'Gagal menghubungi server untuk mengirim email.',
+        title: 'Pengiriman Server Tidak Tersedia (Mode Cloud Statis)',
+        message: 'Endpoint SMTP server tidak terjangkau di hosting statis. Silakan gunakan tombol "Buka di Gmail/Outlook (Mailto)" atau "Salin Template HTML" di kartu pratinjau untuk mengirimkan email langsung dengan format resmi.',
       });
     } finally {
       setIsSendingServer(false);

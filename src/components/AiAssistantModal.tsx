@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Sparkles, Check, ArrowRight, RefreshCw, Wand2, Lightbulb } from 'lucide-react';
+import { generateEmailLocally } from '../utils/aiFallback.ts';
 
 interface AiAssistantModalProps {
   isOpen: boolean;
@@ -65,27 +66,40 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
     setPromptType(presetId);
 
     try {
-      const res = await fetch('/api/ai-polish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          promptType: presetId,
-          currentBody,
-          customerName,
-          companyName,
-          extraNotes,
-        }),
-      });
+      let data: any = null;
+      try {
+        const res = await fetch('/api/ai-polish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            promptType: presetId,
+            currentBody,
+            customerName,
+            companyName,
+            extraNotes,
+          }),
+        });
 
-      const data = await res.json();
-      if (data.success && data.text) {
+        if (res.ok) {
+          data = await res.json();
+        }
+      } catch (networkErr) {
+        console.warn('Backend /api/ai-polish unreachable (running in static cloud mode), using smart local engine');
+      }
+
+      if (data && data.success && data.text) {
         setResultText(data.text);
         setSource(data.source || 'ai');
       } else {
-        setResultText('Gagal memproses email dengan AI.');
+        // Instant smart local generator guaranteed to work on Cloudflare Pages static mode
+        const fallbackText = generateEmailLocally(currentBody, presetId, customerName, companyName, extraNotes);
+        setResultText(fallbackText);
+        setSource('cerdas-instan');
       }
     } catch (err: any) {
-      setResultText('Terjadi kendala saat menghubungi asisten AI.');
+      const fallbackText = generateEmailLocally(currentBody, presetId, customerName, companyName, extraNotes);
+      setResultText(fallbackText);
+      setSource('cerdas-instan');
     } finally {
       setIsLoading(false);
     }
