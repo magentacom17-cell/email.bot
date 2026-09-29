@@ -9,7 +9,6 @@
     "deploy": "vite build",
     "start": "tsx server.ts",
     "preview": "vite preview",
-    "pages:deploy": "wrangler pages deploy dist --project-name=radcom-email-workspace",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
   },
@@ -38,7 +37,6 @@
     "esbuild": "^0.28.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.21.0",
-    "typescript": "^7.0.2",
-    "wrangler": "^4.143.0"
+    "typescript": "^7.0.2"
   }
 }
