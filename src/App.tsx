@@ -50,38 +50,66 @@ import {
 export default function App() {
   // Persistent Settings
   const [senderProfile, setSenderProfile] = useState<SenderProfile>(() => {
-    const saved = localStorage.getItem('radcom_sender_profile_v2');
-    return saved ? JSON.parse(saved) : defaultSenderProfile;
+    try {
+      const saved = localStorage.getItem('radcom_sender_profile_v2');
+      return saved ? JSON.parse(saved) : defaultSenderProfile;
+    } catch {
+      return defaultSenderProfile;
+    }
   });
 
   const [contacts, setContacts] = useState<CustomerContact[]>(() => {
-    const saved = localStorage.getItem('radcom_contacts');
-    return saved ? JSON.parse(saved) : defaultContacts;
+    try {
+      const saved = localStorage.getItem('radcom_contacts');
+      return saved ? JSON.parse(saved) : defaultContacts;
+    } catch {
+      return defaultContacts;
+    }
   });
 
   const [history, setHistory] = useState<EmailHistoryItem[]>(() => {
-    const saved = localStorage.getItem('radcom_history');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('radcom_history');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
   const [templates, setTemplates] = useState<EmailTemplate[]>(() => {
-    const saved = localStorage.getItem('radcom_custom_templates');
-    return saved ? JSON.parse(saved) : defaultTemplates;
+    try {
+      const saved = localStorage.getItem('radcom_custom_templates');
+      return saved ? JSON.parse(saved) : defaultTemplates;
+    } catch {
+      return defaultTemplates;
+    }
   });
 
   const [smtpConfig, setSmtpConfig] = useState<SmtpConfig>(() => {
-    const saved = localStorage.getItem('radcom_smtp_config');
-    return saved
-      ? JSON.parse(saved)
-      : {
-          host: '',
-          port: 465,
-          secure: true,
-          user: '',
-          pass: '',
-          from: '',
-          enabled: false,
-        };
+    try {
+      const saved = localStorage.getItem('radcom_smtp_config');
+      return saved
+        ? JSON.parse(saved)
+        : {
+            host: '',
+            port: 465,
+            secure: true,
+            user: '',
+            pass: '',
+            from: '',
+            enabled: false,
+          };
+    } catch {
+      return {
+        host: '',
+        port: 465,
+        secure: true,
+        user: '',
+        pass: '',
+        from: '',
+        enabled: false,
+      };
+    }
   });
 
   // Active Email Form State
@@ -133,19 +161,35 @@ export default function App() {
 
   // Save changes to localStorage
   useEffect(() => {
-    localStorage.setItem('radcom_sender_profile_v2', JSON.stringify(senderProfile));
+    try {
+      localStorage.setItem('radcom_sender_profile_v2', JSON.stringify(senderProfile));
+    } catch (e) {
+      console.warn('Could not save sender profile', e);
+    }
   }, [senderProfile]);
 
   useEffect(() => {
-    localStorage.setItem('radcom_contacts', JSON.stringify(contacts));
+    try {
+      localStorage.setItem('radcom_contacts', JSON.stringify(contacts));
+    } catch (e) {
+      console.warn('Could not save contacts', e);
+    }
   }, [contacts]);
 
   useEffect(() => {
-    localStorage.setItem('radcom_history', JSON.stringify(history));
+    try {
+      localStorage.setItem('radcom_history', JSON.stringify(history));
+    } catch (e) {
+      console.warn('Could not save history', e);
+    }
   }, [history]);
 
   useEffect(() => {
-    localStorage.setItem('radcom_smtp_config', JSON.stringify(smtpConfig));
+    try {
+      localStorage.setItem('radcom_smtp_config', JSON.stringify(smtpConfig));
+    } catch (e) {
+      console.warn('Could not save smtp config', e);
+    }
   }, [smtpConfig]);
 
   // Handle template selection
