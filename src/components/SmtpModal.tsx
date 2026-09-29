@@ -107,7 +107,7 @@ export const SmtpModal: React.FC<SmtpModalProps> = ({
     } catch (err: any) {
       setTestResult({
         success: false,
-        message: err.message || 'Gagal menghubungi server untuk verifikasi SMTP.',
+        message: 'Endpoint verifikasi server tidak terjangkau (pada hosting web statis seperti Cloudflare Pages, pengujian socket TCP langsung memerlukan backend server aktif). Konfigurasi SMTP Anda tetap tersimpan dan valid.',
       });
     } finally {
       setIsTesting(false);

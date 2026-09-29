@@ -214,8 +214,6 @@ app.post('/api/ai-polish', async (req: Request, res: Response): Promise<void> =>
     }
 
     const ai = new GoogleGenAI();
-    const model = 'gemini-3.8-flash';
-
     const systemInstruction = `Anda adalah asisten komunikasi B2B senior untuk PT Radcom Solusindo Informatika (supplier dan partner pengadaan perlengkapan industri, electrical, IT & networking, CCTV, AC, safety equipment, dan perkantoran).
 Tugas Anda adalah menulis atau menyempurnakan draft email penawaran / follow up dalam bahasa Indonesia yang sangat sopan, profesional, terstruktur, dan persuasif tanpa terkesan memaksa.
 Gunakan placeholder [Nama] dan [Perusahaan] jika diperlukan.
@@ -233,23 +231,43 @@ Teks draft saat ini:
 
 Tolong tuliskan draft email yang rapi, profesional, dan meyakinkan. Sertakan salam pembuka resmi, perkenalan singkat PT Radcom Solusindo Informatika jika relevan, inti pesan, dan penutup ramah.`;
 
-    const response = await ai.models.generateContent({
-      model,
-      contents: [
-        { role: 'user', parts: [{ text: userPrompt }] }
-      ],
-      config: {
-        systemInstruction,
-        temperature: 0.7,
-      },
-    });
+    let reply = '';
+    // Model waterfall: try gemini-3.1-flash-lite first (active quota), fallback to local rule-based
+    try {
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-lite',
+        contents: [
+          { role: 'user', parts: [{ text: userPrompt }] }
+        ],
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+        },
+      });
+      reply = response.text || '';
+    } catch (modelErr: any) {
+      console.warn('Gemini 3.1-flash-lite unavailable or quota reached:', modelErr?.message || modelErr);
+      try {
+        const fallbackResponse = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+          config: { systemInstruction, temperature: 0.7 },
+        });
+        reply = fallbackResponse.text || '';
+      } catch (gemini38Err) {
+        console.info('Switching to smart local template generator due to API quota.');
+      }
+    }
 
-    const reply = response.text || '';
-    res.json({ success: true, text: reply.trim(), source: 'gemini' });
+    if (reply && reply.trim()) {
+      res.json({ success: true, text: reply.trim(), source: 'gemini' });
+    } else {
+      const fallbackText = enhanceEmailLocally(req.body.currentBody, req.body.promptType, req.body.customerName, req.body.companyName);
+      res.json({ success: true, text: fallbackText, source: 'fallback' });
+    }
   } catch (error: any) {
-    console.error('AI polish error:', error);
-    // Graceful fallback
-    const fallbackText = enhanceEmailLocally(req.body.currentBody, req.body.promptType, req.body.customerName, req.body.companyName);
+    // Graceful fallback without 500 error
+    const fallbackText = enhanceEmailLocally(req.body?.currentBody, req.body?.promptType, req.body?.customerName, req.body?.companyName);
     res.json({ success: true, text: fallbackText, source: 'fallback' });
   }
 });

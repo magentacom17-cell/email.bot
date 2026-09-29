@@ -471,7 +471,7 @@ export default function App() {
         }
       } else {
         const a = document.createElement('a');
-        a.href = '/api/company-profile-pdf';
+        a.href = '/Company-Profile-PT-Radcom-Solusindo.pdf';
         a.download = 'Company-Profile-PT-Radcom-Solusindo.pdf';
         document.body.appendChild(a);
         a.click();
@@ -564,7 +564,7 @@ export default function App() {
         }
       } else {
         const a = document.createElement('a');
-        a.href = '/api/company-profile-pdf';
+        a.href = '/Company-Profile-PT-Radcom-Solusindo.pdf';
         a.download = 'Company-Profile-PT-Radcom-Solusindo.pdf';
         document.body.appendChild(a);
         a.click();

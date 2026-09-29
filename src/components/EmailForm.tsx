@@ -602,7 +602,7 @@ export const EmailForm: React.FC<EmailFormProps> = ({
                   Ingin melihat file profil bawaan PT Radcom?
                 </span>
                 <a
-                  href="/api/company-profile-pdf"
+                  href="/Company-Profile-PT-Radcom-Solusindo.pdf"
                   download="Company-Profile-PT-Radcom-Solusindo.pdf"
                   className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors"
                 >
