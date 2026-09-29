@@ -1,0 +1,3 @@
+[install]
+# Prevent generating bun.lock so Cloudflare Pages uses npm with standard package-lock.json
+save = false
