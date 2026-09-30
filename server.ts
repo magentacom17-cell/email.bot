@@ -232,7 +232,6 @@ Teks draft saat ini:
 Tolong tuliskan draft email yang rapi, profesional, dan meyakinkan. Sertakan salam pembuka resmi, perkenalan singkat PT Radcom Solusindo Informatika jika relevan, inti pesan, dan penutup ramah.`;
 
     let reply = '';
-    // Model waterfall: try gemini-3.1-flash-lite first (active quota), fallback to local rule-based
     try {
       const response = await ai.models.generateContent({
         model: 'gemini-3.1-flash-lite',
@@ -246,17 +245,7 @@ Tolong tuliskan draft email yang rapi, profesional, dan meyakinkan. Sertakan sal
       });
       reply = response.text || '';
     } catch (modelErr: any) {
-      console.warn('Gemini 3.1-flash-lite unavailable or quota reached:', modelErr?.message || modelErr);
-      try {
-        const fallbackResponse = await ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-          config: { systemInstruction, temperature: 0.7 },
-        });
-        reply = fallbackResponse.text || '';
-      } catch (gemini38Err) {
-        console.info('Switching to smart local template generator due to API quota.');
-      }
+      console.warn('Gemini API call skipped or quota limited, using smart local generator.');
     }
 
     if (reply && reply.trim()) {
